@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chat Client</title>
+    <!--<script type="text/javascript" src="/socket.io.js"></script>
+    <script type="text/javascript">
+      var socket=io.connect("http://localhost:3000/");
+      // when stream will be ready
+      socket.on('connect',()=>{
+        var name=prompt("enter your name!");
+        // write on stream !! Event "JOIN"
+        socket.emit('join',name);
+      })
+      window.onload=()=>{
+        var doc=document,online_users,messageText,msgBtn,sendToUserBtn,messages;
+        messageText=doc.getElementById("msg");
+        msgBtn=doc.getElementById("sendBtn");
+        sendToUserBtn=doc.getElementById("sendToUserBtn");
+
+        online_users=doc.getElementById("online_users");
+        messages=doc.getElementById("messages");
+        // Listen for data coming from Server ...
+        socket.on('message',data=>{
+          messages.innerHTML+=`<li>${data}</li>`
+        })
+
+        sendToUserBtn.addEventListener('click',()=>{
+            socket.emit("send_to_user",{
+              to:online_users.value,
+              text:messageText.value
+            })
+            console.log({
+              to:online_users.value,
+              text:messageText.value
+            });
+        })
+        msgBtn.addEventListener('click',()=>{
+          // write on stream
+          socket.emit("message",messageText.value);
+        })
+
+        // when new user log in
+        socket.on("online_users",users=>{
+          online_users.innerHTML='';
+          users.forEach(user=>{
+            online_users.innerHTML+=`<option>${user}</option>`
+          })
+        })
+      }
+    </script>-->
+
+
+  </head>
+  <body>
+<h1>Welcome To Server</h1>
+
+  </body>
+</html>
