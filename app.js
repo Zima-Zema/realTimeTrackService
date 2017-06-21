@@ -1,5 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var request =require('request');
+
 
 var app = express();
 app.set('view engine', 'ejs')
@@ -9,19 +11,31 @@ var server = http.createServer(app);
 //HTTP SERVER
 var io = require('socket.io')(server);
 // Users Dic for users names and sockets
-var parentDictionary = {}
-var childDictionary = {}
+var parentDictionary = {};
+var childDictionary = {};
+var notificationDic={};
 // Listen for new connections
 // Open new Socket for each request
 io.on('connection', clientSocket => {
   console.log("connect");
   // Listen for new connection ..
-  clientSocket.on('joinParent', parentID => {
+  clientSocket.on('joinParent', parent => {
     // add socket and user name
-    clientSocket.parentId = parentID;
-    parentDictionary[parentID] = clientSocket;
-    console.log("Parent>>>",parentID)
+    if(!parentDictionary[parentID]){
+      
+      parentDictionary[parentID] = clientSocket;
+      console.log("Parent>>>",parentID)
+    }
+  });
+  
 
+  clientSocket.on('NotifyParent', parentID => {
+    // add socket and user name
+        if(!notificationDic[parent.id]){
+      
+      notificationDic[parent.id] = parent.token;
+      console.log("Parent>>>",parent)
+    }
   });
   clientSocket.on('joinChild', childID => {
     // add socket and user name
@@ -31,6 +45,29 @@ io.on('connection', clientSocket => {
     console.log("Child>>>",childID);
 
   });
+clientSocket.on('sendNotification',notification=>{
+  request({
+    url:'https://fcm.googleapis.com/fcm/send',
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'key=AAAAtqx7tBc:APA91bH6SjL1NxJE3_YTB9EL-5txIMYGkbQ7DDda_20oH-bIR70Tpk6wHZ3WA6ny2QefVSTutJZ3'
+    },
+    body:JSON.stringify({
+      "data":{
+        "message":notification.data,
+        "title":notification.title
+      },
+      "to":notification.to
+    })
+  },(error,respose,body)=>{
+
+  })
+})
+
+
+
+
   // send message for certain user
   clientSocket.on('sendToParent', message => {
     parentDictionary[message.to].emit('message',message.data);
@@ -82,4 +119,4 @@ app.post("/users", bodyParser.json(), (req, resp) => {
   console.log(req.body);
   resp.send("ok");
 })
-server.listen(process.env.PORT);
+server.listen(3000);
