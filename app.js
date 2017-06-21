@@ -58,7 +58,7 @@ clientSocket.on('sendNotification',notification=>{
         "message":notification.data,
         "title":notification.title
       },
-      "to":notification.to
+      "to":notificationDic[notification.to]
     })
   },(error,respose,body)=>{
 
