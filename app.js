@@ -6,7 +6,7 @@ var http = require('http');
 
 
 var app = express();
-app.set('port', (process.env.PORT || 5000));
+//app.set('port', (process.env.PORT || 5000));
 app.use(cors());
 app.set('view engine', 'ejs')
 app.use(express.static('public'));
@@ -124,7 +124,7 @@ app.post("/users", bodyParser.json(), (req, resp) => {
   console.log(req.body);
   resp.send("ok");
 })
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
+// app.listen(app.get('port'), function() {
+//   console.log('Node app is running on port', app.get('port'));
+// });
 server.listen(process.env.PORT);
