@@ -1,12 +1,15 @@
 var express = require('express');
+var cors = require('cors');
 var bodyParser = require('body-parser');
 var request = require('request');
+var http = require('http');
 
 
 var app = express();
+app.use(cors());
 app.set('view engine', 'ejs')
 app.use(express.static('public'));
-var http = require('http');
+
 var server = http.createServer(app);
 //HTTP SERVER
 var io = require('socket.io')(server);
@@ -120,4 +123,4 @@ app.post("/users", bodyParser.json(), (req, resp) => {
   console.log(req.body);
   resp.send("ok");
 })
-server.listen(process.env.PORT);
+server.listen(3000);
