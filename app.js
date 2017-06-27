@@ -1,6 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var request =require('request');
+var request = require('request');
 
 
 var app = express();
@@ -13,7 +13,7 @@ var io = require('socket.io')(server);
 // Users Dic for users names and sockets
 var parentDictionary = {};
 var childDictionary = {};
-var notificationDic={};
+var notificationDic = {};
 // Listen for new connections
 // Open new Socket for each request
 io.on('connection', clientSocket => {
@@ -21,56 +21,57 @@ io.on('connection', clientSocket => {
   // Listen for new connection ..
   clientSocket.on('joinParent', parent => {
     // add socket and user name
-    if(!parentDictionary[parentID]){
-      
+    
+      parentDictionary.parentId = childID;
       parentDictionary[parentID] = clientSocket;
-      console.log("Parent>>>",parentID)
-    }
+      console.log("Parent>>>", parentID)
+ 
   });
-  
 
-  clientSocket.on('NotifyParent', parentID => {
+
+  clientSocket.on('NotifyParent', parent => {
     // add socket and user name
-        if(!notificationDic[parent.id]){
-      
       notificationDic[parent.id] = parent.token;
-      console.log("Parent>>>",parent)
-    }
+      console.log("Parent>>>", parent)
+    
   });
   clientSocket.on('joinChild', childID => {
     // add socket and user name
-    clientSocket.childId = childID;
+   
+      clientSocket.childId = childID;
+
+      childDictionary[childID] = clientSocket;
+      console.log("Child>>>", childID);
     
-    childDictionary[childID] = clientSocket;
-    console.log("Child>>>",childID);
 
   });
-clientSocket.on('sendNotification',notification=>{
-  request({
-    url:'https://fcm.googleapis.com/fcm/send',
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'key=AAAAtqx7tBc:APA91bH6SjL1NxJE3_YTB9EL-5txIMYGkbQ7DDda_20oH-bIR70Tpk6wHZ3WA6ny2QefVSTutJZ3'
-    },
-    body:JSON.stringify({
-      "data":{
-        "message":notification.data,
-        "title":notification.title
+  clientSocket.on('sendNotification', notification => {
+    console.log("Notification>>", notification)
+    console.log("NotificationToken>>", notificationDic[notification.to])
+    request({
+      url: 'https://fcm.googleapis.com/fcm/send',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'key=AAAAtqx7tBc:APA91bFGtGiGD8EmLoUVhv9AtFq538zjLcqbAQwH7t_OGaCuIGNws-hKR63SyvidBVGwi31aqMEJvj07j0Fyu99hWxiQyAflnfFxgfEHn0B6ruOQ8WfvD62seyjvoO-rPpejVWVZBwKs'
       },
-      "to":notificationDic[notification.to]
+      body: JSON.stringify({
+        "data": {
+          "message": notification.message,
+          "title": notification.title,
+          
+        },
+        "to": notificationDic[notification.to]
+      })
+    }, (error, respose, body) => {
+      // console.log('error>>', error);
+      // console.log('respose>>', respose);
+      //console.log('body>>', body);
     })
-  },(error,respose,body)=>{
-
   })
-})
-
-
-
-
   // send message for certain user
   clientSocket.on('sendToParent', message => {
-    parentDictionary[message.to].emit('message',message.data);
+    parentDictionary[message.to].emit('message', message.data);
     clientSocket.emit("message", "Me : " + message.data);
     console.log(message);
   })
@@ -119,4 +120,4 @@ app.post("/users", bodyParser.json(), (req, resp) => {
   console.log(req.body);
   resp.send("ok");
 })
-server.listen(3000);
+server.listen(process.env.PORT);
